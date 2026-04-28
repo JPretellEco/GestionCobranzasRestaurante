@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # Base de datos única y fija (SQLite local en tu proyecto)
-DATABASE_URL = "sqlite:///C:/Users/leo_2/Downloads/cuentaspro/backend/cuentaspro.db"
+DATABASE_URL = "sqlite:///./cuentaspro.db"
 
 engine = create_engine(
     DATABASE_URL,
