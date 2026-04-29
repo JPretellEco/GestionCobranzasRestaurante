@@ -1,20 +1,22 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Base de datos única y fija (SQLite local en tu proyecto)
-DATABASE_URL = "sqlite:///./cuentaspro.db"
+# Lee la variable de entorno que pondrás en Render
+# Localmente usa SQLite como fallback
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./cuentaspro.db")
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
-)
+# Render entrega URLs que empiezan con "postgres://" (viejo formato)
+# SQLAlchemy 2.x necesita "postgresql://"
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+# Solo SQLite necesita check_same_thread
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
